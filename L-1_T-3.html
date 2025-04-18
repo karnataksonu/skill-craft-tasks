@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MoodCalc - Mood-Themed Calculator</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --screen-bg: #f0f0f0;
+      --button-bg: #e0e0e0;
+      --button-text: #000;
+      --accent: #007bff;
+      --font: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background-color: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 100vh;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .mood-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .mood-btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: var(--accent);
+      color: white;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+    }
+
+    .mood-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .calculator {
+      width: 300px;
+      background-color: var(--screen-bg);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .screen {
+      width: 100%;
+      height: 50px;
+      background-color: white;
+      text-align: right;
+      padding: 10px;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 15px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--accent);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    /* Themes */
+    .happy {
+      --bg: #fff8dc;
+      --screen-bg: #fffacd;
+      --button-bg: #ffe4b5;
+      --button-text: #000;
+      --accent: #ff9800;
+      --font: 'Comic Sans MS', cursive;
+    }
+
+    .calm {
+      --bg: #e0f7fa;
+      --screen-bg: #b2ebf2;
+      --button-bg: #80deea;
+      --button-text: #004d40;
+      --accent: #0097a7;
+      --font: 'Arial', sans-serif;
+    }
+
+    .energetic {
+      --bg: #1a1a1a;
+      --screen-bg: #2c2c2c;
+      --button-bg: #ff1744;
+      --button-text: white;
+      --accent: #f50057;
+      --font: 'Orbitron', sans-serif;
+    }
+
+    .dark {
+      --bg: #121212;
+      --screen-bg: #1e1e1e;
+      --button-bg: #333;
+      --button-text: #eee;
+      --accent: #bb86fc;
+      --font: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>MoodCalc</h1>
+  <div class="mood-selector">
+    <button class="mood-btn" onclick="setMood('happy')">😊 Happy</button>
+    <button class="mood-btn" onclick="setMood('calm')">🌊 Calm</button>
+    <button class="mood-btn" onclick="setMood('energetic')">⚡ Energetic</button>
+    <button class="mood-btn" onclick="setMood('dark')">🌑 Dark</button>
+  </div>
+
+  <div class="calculator">
+    <div class="screen" id="screen">0</div>
+    <div class="buttons">
+      <button class="btn" onclick="clearScreen()">C</button>
+      <button class="btn" onclick="deleteLast()">DEL</button>
+      <button class="btn" onclick="append('%')">%</button>
+      <button class="btn" onclick="append('/')">/</button>
+      <button class="btn" onclick="append('7')">7</button>
+      <button class="btn" onclick="append('8')">8</button>
+      <button class="btn" onclick="append('9')">9</button>
+      <button class="btn" onclick="append('*')">*</button>
+      <button class="btn" onclick="append('4')">4</button>
+      <button class="btn" onclick="append('5')">5</button>
+      <button class="btn" onclick="append('6')">6</button>
+      <button class="btn" onclick="append('-')">-</button>
+      <button class="btn" onclick="append('1')">1</button>
+      <button class="btn" onclick="append('2')">2</button>
+      <button class="btn" onclick="append('3')">3</button>
+      <button class="btn" onclick="append('+')">+</button>
+      <button class="btn" onclick="append('0')">0</button>
+      <button class="btn" onclick="append('.')">.</button>
+      <button class="btn" onclick="calculate()">=</button>
+    </div>
+  </div>
+
+  <script>
+    const screen = document.getElementById('screen');
+
+    function append(value) {
+      if (screen.innerText === '0' || screen.innerText === 'Error') {
+        screen.innerText = value;
+      } else {
+        screen.innerText += value;
+      }
+    }
+
+    function clearScreen() {
+      screen.innerText = '0';
+    }
+
+    function deleteLast() {
+      if (screen.innerText.length > 1) {
+        screen.innerText = screen.innerText.slice(0, -1);
+      } else {
+        screen.innerText = '0';
+      }
+    }
+
+    function calculate() {
+      try {
+        screen.innerText = eval(screen.innerText.replace('%', '/100'));
+      } catch {
+        screen.innerText = 'Error';
+      }
+    }
+
+    function setMood(mood) {
+      document.body.className = mood;
+      localStorage.setItem('mood', mood);
+    }
+
+    // Load last selected mood
+    const savedMood = localStorage.getItem('mood');
+    if (savedMood) setMood(savedMood);
+  </script>
+</body>
+</html>
